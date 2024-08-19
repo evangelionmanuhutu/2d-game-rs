@@ -12,7 +12,7 @@ pub struct Window {
 }
 
 impl Window{
-    pub fn new(width: u32, height: u32, mut title: String) -> Self {
+    pub fn init(width: u32, height: u32, mut title: &str) -> Self {
         use glfw::fail_on_errors;
         let mut glfw_context = glfw::init(fail_on_errors!()).unwrap();
 
@@ -35,7 +35,7 @@ impl Window{
         }
     }
 
-    pub fn is_looping(&self) -> bool {
+    pub fn is_looping(&mut self) -> bool {
         !self.window.should_close()
     }
 
@@ -70,4 +70,9 @@ impl Window{
         
         println!("Window resized to {}x{}", self.width, self.height);
     }
+
+    pub fn get_glfw_context(&mut self) -> glfw::Glfw {
+        self.glfw_context.clone()
+    }
+
 }
