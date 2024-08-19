@@ -1,4 +1,5 @@
 extern crate nalgebra_glm as glm;
+extern crate glfw;
 use glm::{Mat4, Vec2, Vec3};
 
 pub struct Camera {
@@ -7,14 +8,13 @@ pub struct Camera {
     aspect_ratio: f32,
     projection_matrix: Mat4,
     view_matrix: Mat4,
-    position: Vec3,
+    pub position: Vec3,
     viewport_size: Vec2
 }
 
 impl Camera {
-    pub fn new(width: f32, height: f32) -> Self {
+    pub fn new(width: f32, height: f32, ortho_scale: f32) -> Self {
         let aspect_ratio = width / height;
-        let ortho_scale: f32 = 10.0;
         let ortho_size = Vec2::new(ortho_scale * aspect_ratio / 2.0, ortho_scale / 2.0);
 
         // Initialize matrices
@@ -35,7 +35,7 @@ impl Camera {
         camera
     }
 
-    pub fn update(&mut self, delta_time: f32) {
+    pub fn update(&mut self) {
         self.update_projection();
         self.update_view();
     }

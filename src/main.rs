@@ -1,18 +1,20 @@
 mod renderer;
 mod camera;
+
 extern crate nalgebra_glm as glm;
 extern crate gl;
 
 use renderer::window::Window;
 use renderer::shader::Shader;
 use camera::Camera;
+use glfw::{Key};
 
 use std::mem::size_of;
 
 fn main() {
     let window_width: u32 = 600;
     let window_height: u32 = 400;
-    let mut main_window = Window::init(window_width, window_height, "2D Game");
+    let mut window = Window::init(window_width, window_height, "2D Game");
     
     let mut vao: u32 = 0;
     let mut vbo: u32 = 0;
@@ -50,20 +52,33 @@ fn main() {
         gl::BindVertexArray(0);
     }
 
-    let mut shader = Shader::create("shaders/shader.vert", "shaders/shader.frag");
-    let mut camera = Camera::new(600.0, 400.0);
-
+    let mut shader = Shader::create(
+        "shaders/shader.vert",
+         "shaders/shader.frag");
+    let mut camera = Camera::new(600.0, 400.0, 5.0);
     let identity = glm::Mat4::identity();
     let model_matrix = glm::translate(&identity, &glm::Vec3::new(0.0, 0.0, -1.0));
 
     let mut last_frame_time: f64 = 0.0;
-    while main_window.is_looping() {
+    while window.is_looping() {
 
-        let current_time  = main_window.get_glfw_context().get_time();
+        let current_time  = window.get_glfw_context().get_time();
         let delta_time = current_time - last_frame_time;
         last_frame_time = current_time;
 
-        camera.update(delta_time as f32);
+        if window.is_key_pressed(Key::A) {
+            camera.position.x -= 2.0 * delta_time as f32;
+        } else if window.is_key_pressed(Key::D) {
+            camera.position.x += 2.0 * delta_time as f32;
+        }
+
+        if window.is_key_pressed(Key::W) {
+            camera.position.y += 2.0 * delta_time as f32;
+        } else if window.is_key_pressed(Key::S) {
+            camera.position.y -= 2.0 * delta_time as f32;
+        }
+        
+        camera.update();
 
         // clear color
         unsafe {
@@ -79,6 +94,7 @@ fn main() {
             gl::BindVertexArray(0);
         }
 
-        main_window.update();
+        window.update();
     }
 }
+

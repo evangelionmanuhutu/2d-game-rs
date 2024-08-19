@@ -1,13 +1,15 @@
 extern crate glfw;
 extern crate gl;
 
-use glfw::{Action, Context, GlfwReceiver, Key, WindowEvent};
+use std::borrow::Borrow;
+
+use glfw::{Action, Context, GlfwReceiver, Key, MouseButton, PWindow, Glfw, WindowEvent};
 
 pub struct Window {
     width: u32,
     height: u32,
-    glfw_context: glfw::Glfw,
-    window: glfw::PWindow,
+    glfw_context: Glfw,
+    window: PWindow,
     events: GlfwReceiver<(f64, WindowEvent)>
 }
 
@@ -35,7 +37,7 @@ impl Window{
         }
     }
 
-    pub fn is_looping(&mut self) -> bool {
+    pub fn is_looping(&self) -> bool {
         !self.window.should_close()
     }
 
@@ -71,8 +73,23 @@ impl Window{
         println!("Window resized to {}x{}", self.width, self.height);
     }
 
-    pub fn get_glfw_context(&mut self) -> glfw::Glfw {
-        self.glfw_context.clone()
+    pub fn get_glfw_context(&self) -> &glfw::Glfw {
+        &self.glfw_context
+    }
+
+    pub fn is_key_pressed(&self, key: Key) -> bool {
+        let action = self.window.get_key(key);
+        action == Action::Press
+    }
+
+    pub fn is_mouse_button_pressed(&self, mouse_button: MouseButton) -> bool {
+        let action = self.window.get_mouse_button(mouse_button);
+        action == Action::Press
+    }
+
+    pub fn get_cursor_pos(&self) -> (f64, f64) {
+        let (x, y) = self.window.get_cursor_pos();
+        (x, y)
     }
 
 }
