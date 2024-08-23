@@ -37,6 +37,10 @@ impl Shader {
         unsafe { gl::UseProgram(self.id); }
     }
 
+    pub fn drop(&self) {
+        unsafe { gl::DeleteProgram(self.id) }
+    }
+
     pub fn get_uniform_location(&mut self, name: &str) -> i32 {
         if let Some(&location ) = self.uniform_locations.get(name) {
             return location;
@@ -49,6 +53,11 @@ impl Shader {
             self.uniform_locations.insert(name.to_string(), location);
             location
         }
+    }
+
+    pub fn set_int1(&mut self, name: &str, value: i32) {
+        let location = self.get_uniform_location(name);
+        unsafe { gl::Uniform1i(location, value) }
     }
 
     pub fn set_matrix3(&mut self, name: &str, value: glm::Mat3) {

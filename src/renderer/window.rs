@@ -1,9 +1,9 @@
 extern crate glfw;
 extern crate gl;
 
-use std::borrow::Borrow;
+use std::borrow::BorrowMut;
 
-use glfw::{Action, Context, GlfwReceiver, Key, MouseButton, PWindow, Glfw, WindowEvent};
+use glfw::{Action, Context, Glfw, GlfwReceiver, Key, MouseButton, PWindow, WindowEvent};
 
 pub struct Window {
     width: u32,
@@ -53,9 +53,6 @@ impl Window{
 
         for event in events {
             match event {
-                WindowEvent::Key(Key::Escape, _, Action::Press, _ ) => {
-                    self.window.set_should_close(true);
-                },
                 WindowEvent::Size(width, height) => {
                     self.handle_window_resize(width, height);
                 },
@@ -67,10 +64,12 @@ impl Window{
     fn handle_window_resize(&mut self, width: i32, height: i32) {
         self.width = width as u32;
         self.height = height as u32;
-
         unsafe { gl::Viewport(0, 0, width, height) };
-        
         println!("Window resized to {}x{}", self.width, self.height);
+    }
+
+    pub fn get_window_handle(&mut self) -> &mut glfw::PWindow {
+        self.window.borrow_mut()
     }
 
     pub fn get_glfw_context(&self) -> &glfw::Glfw {
@@ -90,6 +89,10 @@ impl Window{
     pub fn get_cursor_pos(&self) -> (f64, f64) {
         let (x, y) = self.window.get_cursor_pos();
         (x, y)
+    }
+
+    pub fn close(&mut self) {
+        self.window.set_should_close(true)
     }
 
 }
